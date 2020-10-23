@@ -50,6 +50,8 @@ def dirspec(ID, SM, EP, Options_=None):
     
     Translated by Chuan Li and Spicer Bak,
     Field Research Facility, US Army Corps of Engineers
+    
+    Christine M. Baker edited script. The input EP file in form dictionary (line 85)
     """
 
     Options = {'MESSAGE':1, 'PLOTTYPE':1, 'FILEOUT':''}
@@ -79,13 +81,14 @@ def dirspec(ID, SM, EP, Options_=None):
 
     data = detrend(ID['data'], axis=0)
     ndat, szd = np.shape(ID['data'])
-
+    
     #get resolution of FFT - if not specified, calculate a sensible value
-    if len(EP['nfft']) == 0:
+    #if EP['nfft'] == 0:
+    if 'nfft' in EP:
+        nfft = int(EP['nfft'])
+    else:
         nfft = int(2 ** (8 + np.round(np.log2(ID['fs']))))
         EP['nfft'] = nfft
-    else:
-        nfft = int(EP['nfft'])
     if nfft > ndat: raise Exception('Data length of {} too small'.format(dat))
 
     #calculate the cross-power spectra
@@ -98,8 +101,7 @@ def dirspec(ID, SM, EP, Options_=None):
 
     print('wavenumbers')
     wns = wavenumber(2  * np.pi * F, ID['depth'] * np.ones(np.shape(F)))
-    pidirs = np.linspace(-np.pi, np.pi - 2 * np.pi / EP['dres'], 
-        num=2 * np.pi / (2 * np.pi / EP['dres']))
+    pidirs = np.linspace(-np.pi, np.pi - 2 * np.pi / EP['dres'], num=int(2 * np.pi / (2 * np.pi / EP['dres']))) # CB changed
 
     #calculate transfer parameters
     print('transfer parameters\n')
